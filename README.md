@@ -1,1 +1,90 @@
-# result
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>访问结果</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script>
+      function search(){
+    	  if($("#links").val() == ""){
+    		  return;
+    	  }
+          $.ajax({
+              type: "POST",
+              url: "http://123.206.224.18:9000/xz/SearchwsServlet",
+              dataType: "json",
+              data: "links=" + encodeURIComponent($("#links").val()),
+              success: function(result){
+            	           if(result.length == 0){
+            	        	   $("#result").hide();
+            	        	   $("#noresult").show();
+            	        	   return;
+            	           }
+                           while($("#result tr").length > 1){
+                               $("#result tr").eq(-1).remove();
+                           }
+                           $.each(result, function(){
+                               $("#result").append("<tr><td>"                       + this.dtm +
+                                                  "</td><td>"                       + this.identifier +
+                                                  "</td><td style='display:none;'>" + this.url +
+                                                  "</td><td>"                       + this.ip +
+                                                  "</td><td>"                       + this.address +
+                                                  "</td><td style='display:none;'>" + this.isp +
+                                                  "</td><td>"                       + this.os +
+                                                  "</td><td style='display:none;'>" + this.browser +
+                                                  "</td><td style='display:none;'>" + this.user +
+                                                  "</td><td>"                       + this.trap +
+                                                  "</td><td style='display:none;'>" + this.remark +
+                                                  "</td><td><input type='button' value='查' onClick='detail(this)'>" +
+                                                  "</td></tr>");
+                           });
+        	        	   $("#noresult").hide();
+                           $("#result").show();
+                       },
+              error: function(result){
+                  alert("error");
+              }
+          });
+      }
+      function detail(tag){
+    	  var thisTds = $(tag).parent().parent().children();
+    	  var headerTr = $("#result tr").eq(0);
+    	  var headerThs = headerTr.children();
+    	  var length = headerThs.length;
+    	  var display = "";
+    	  for(var i = 0; i < length-1; i++){
+    		  display = display + headerThs.eq(i).html() + " : " + thisTds.eq(i).html() + "\r\n";
+    	  }
+    	  alert(display);
+      }
+    </script>
+    <style type="text/css">
+      table{ border-collapse:collapse; border:solid 1px Black; width:100%;}
+      table th,td{border:solid 1px Black; padding:5px; text-align:center;}
+      textarea{width:100%;}
+    </style>
+  </head>
+  <body>
+    <p>输入链接，查询结果</p>
+    <textarea id="links" rows="6" cols="90%" placeholder="可输入多个链接，换行分割"></textarea><br>
+    <input type="button" value="查询" onClick="search()">
+    <h3 id="noresult" style="display:none;">暂时没有访问</h3>
+    <table id="result" style="display:none;">
+      <tr>
+        <th bgcolor="#BFBFBF">访问时间</th>
+        <th bgcolor="#BFBFBF">标识符</th>
+        <th bgcolor="#BFBFBF" style="display:none;">链接</th>
+        <th bgcolor="#BFBFBF" style="white-space:pre-wrap">IP</th>
+        <th bgcolor="#BFBFBF">位置</th>
+        <th bgcolor="#BFBFBF" style="display:none;">运营商</th>
+        <th bgcolor="#BFBFBF">终端</th>
+        <th bgcolor="#BFBFBF" style="display:none;">浏览器</th>
+        <th bgcolor="#BFBFBF" style="display:none;">使用人</th>
+        <th bgcolor="#BFBFBF">使用对象</th>
+        <th bgcolor="#BFBFBF" style="display:none;">备注</th>
+        <th bgcolor="#BFBFBF">详情</th>
+      </tr>
+    </table>
+  </body>
+</html>
